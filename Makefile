@@ -30,14 +30,19 @@ DFU ?= $(TOP)/tools/dfu.py
 PYDFU ?= $(TOP)/tools/pydfu.py
 
 # Point at required Includes and your base ARM-DS installation
+ALIF_DEVICE=Ensemble
+ALIF_CMSIS_VERSION=0.4.1
+CMSIS_VERSION=5.9.0
 ifneq ($(HOST_OS), LINUX_OS)
 USER_BASE    := $(subst \,/,$(USERPROFILE))
-INCLUDE_BASE := $(USER_BASE)/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0
+INCLUDE_BASE := $(USER_BASE)/AppData/Local/Arm/Packs/ARM/CMSIS/$(CMSIS_VERSION)
+ALIF_PACK_SOURCE := $(USER_BASE)/AppData/Local/Arm/Packs/AlifSemiconductor
 else
 USER_BASE    := /home/$(shell whoami)
-INCLUDE_BASE := $(USER_BASE)/.cache/arm/packs/ARM/CMSIS/5.9.0
-ALIF_BASE 	 := $(USER_BASE)/.cache/arm/packs/AlifSemiconductor/Ensemble/0.4.1
+INCLUDE_BASE := $(USER_BASE)/.cache/arm/packs/ARM/CMSIS/$(CMSIS_VERSION)
+ALIF_BASE 	 := $(USER_BASE)/.cache/arm/packs/AlifSemiconductor
 endif
+ALIF_BASE    := $(ALIF_PACK_SOURCE)/$(ALIF_DEVICE)/$(ALIF_CMSIS_VERSION)
 
 # ARM and ALIF CMSIS 
 CFLAGS += -I./RTE
