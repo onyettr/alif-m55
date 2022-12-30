@@ -1,0 +1,11 @@
+{
+	"uPYTHON": {
+        "binary": "firmware.bin",
+        "version" : "1.0.0",
+        "cpu_id": "M55_HE",
+        "loadAddress": "0x60000000",
+        "flags": ["load", "boot"],
+        "signed" : false,
+        "disabled" : false
+        }
+}

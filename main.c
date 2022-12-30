@@ -23,10 +23,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
+#include <stdio.h>
 #include <string.h>
 #include "py/compile.h"
 #include "py/runtime.h"
+#include "RTE_Components.h"
+#include CMSIS_device_header
+#include "uart_tracelib.h"
+
+#if   CPU == M55_HE || defined(M55_HE)
+#include "M55_HE.h"
+#elif CPU == M55_HP || defined(M55_HP)
+#include "M55_HP.h"
+#else
+#error Target CPU is not defined
+#endif
+
+#if 0
+/* Disable Semihosting */
+#if __ARMCC_VERSION >= 6000000
+    __asm(".global __use_no_semihosting");
+#elif __ARMCC_VERSION >= 5000000
+    #pragma import(__use_no_semihosting)
+#else
+    #error Unsupported compiler
+#endif
+#endif
 
 static const char *demo_single_input =
     "print('hello world!', list(x + 1 for x in range(10)), end='eol\\n')";
@@ -55,12 +77,38 @@ static void do_str(const char *src, mp_parse_input_kind_t input_kind) {
     }
 }
 
+void copy_vtor_table_to_ram()
+{
+    extern const VECTOR_TABLE_Type __VECTOR_TABLE[496];
+    static VECTOR_TABLE_Type MyVectorTable[496] __attribute__((aligned (2048)));
+
+    for(int i = 0; i < 496; i++)
+    {
+        MyVectorTable[i] = __VECTOR_TABLE[i];
+    }
+    // Set the new vector table into use.
+    SCB->VTOR = (uint32_t)(&MyVectorTable[0]);
+    __DSB();
+}
+
 // Main entry point: initialise the runtime and execute demo strings.
 void bare_main(void) {
+    // VTOR must be copied into RAM to enable dynamic setting of interrupt handler
+    // This can be removed once build time vector table is fixed to include MHU interrupts
+    copy_vtor_table_to_ram();
+
+    int ret = tracelib_init(NULL);
+
+
+    while (1)
+    	tracef("bare_main starts\n");
+
     mp_init();
     do_str(demo_single_input, MP_PARSE_SINGLE_INPUT);
     do_str(demo_file_input, MP_PARSE_FILE_INPUT);
     mp_deinit();
+
+    (void)ret;
 }
 
 // Called if an exception is raised outside all C exception-catching handlers.
