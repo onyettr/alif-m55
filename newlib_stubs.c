@@ -39,6 +39,7 @@
  * @brief stub for newlib _close function
  * @param file
  */
+#if 0
 int _close(int file)
 {
   return -1;
@@ -52,6 +53,8 @@ int _close_r(int file)
 {
   return -1;
 }
+#endif
+
 /**
  * @brief stub for newlib _fstat function
  * @param file
@@ -99,6 +102,7 @@ int _lseek(int file, int ptr, int dir)
   return 0;
 }
 
+#if 0
 /**
  * @brief stub for newlib _read function
  * @param file
@@ -120,3 +124,4 @@ int _write(int file, char *ptr, int len)
 {
   return len;
 }
+#endif

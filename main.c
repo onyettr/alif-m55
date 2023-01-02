@@ -50,7 +50,7 @@
 #endif
 #endif
 
-#if 0
+#if 1
 static const char *demo_single_input =
     "print('hello world!', list(x + 1 for x in range(10)), end='eol\\n')";
 
@@ -79,6 +79,16 @@ static void do_str(const char *src, mp_parse_input_kind_t input_kind) {
 }
 #endif
 
+// Send string of given length to stdout, converting \n to \r\n.
+void mp_hal_stdout_tx_strn_cooked(const char *str, size_t len) {
+    while (len--) {
+        if (*str == '\n') {
+            printf("\r");
+        }
+        printf("%c",*str++);
+    }
+}
+
 void copy_vtor_table_to_ram()
 {
     extern const VECTOR_TABLE_Type __VECTOR_TABLE[496];
@@ -96,21 +106,19 @@ void copy_vtor_table_to_ram()
 // Main entry point: initialise the runtime and execute demo strings.
 //void bare_main(void) {
 int main(void) {
-    // VTOR must be copied into RAM to enable dynamic setting of interrupt handler
+
+  // VTOR must be copied into RAM to enable dynamic setting of interrupt handler
     // This can be removed once build time vector table is fixed to include MHU interrupts
     copy_vtor_table_to_ram();
-
     int ret = tracelib_init(NULL);
 
+//    printf("ALIF uPython Starts\n");
 
-    while (1)
-    	tracef("bare_main starts\n");
-#if 0
     mp_init();
     do_str(demo_single_input, MP_PARSE_SINGLE_INPUT);
     do_str(demo_file_input, MP_PARSE_FILE_INPUT);
     mp_deinit();
-#endif
+
     (void)ret;
 }
 

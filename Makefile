@@ -100,13 +100,14 @@ LDFLAGS += -specs=nosys.specs
 #LDFLAGS += -nostdlib 
 LDFLAGS	+= -T m55_he_services_test.ld 
 LDFLAGS += -march=armv8.1-m.main
-LDFLAGS	+= -Wl,-Map=nano.map,--cref
+LDFLAGS	+= -Wl,-Map=$(BUILD)/firmware.map,--cref
 LDFLAGS	+= -Wl,--gc-sections
 LDFLAGS += -Xlinker -print-memory-usage -Xlinker
 
 # Define the required source files.
 SRC_C += main.c 
 SRC_C += newlib_stubs.c
+SRC_C += retarget.c
 SRC_C += uart_tracelib.c
 SRC_C +=												 \
 	$(DEVICE_SRC_DIR)/mpu_M55_HE.c					     \
@@ -126,6 +127,10 @@ OBJ += $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 # Define the top-level target, the main firmware.
 all: $(BUILD)/firmware.dfu
 
+install:	$(BUILD)/firmware.elf
+	$(CP) m55-upython.json ../../../../firmware/setools/app-release-exec/build/config
+	$(CP) $(BUILD)/firmware.bin ../../../../firmware/setools/app-release-exec/build/images
+	
 $(BUILD)/firmware.elf: $(OBJ)
 	$(ECHO) "LINK $@"
 	@$(CC) $(LDFLAGS) $(OBJ) -o $(BUILD)/firmware.elf 
