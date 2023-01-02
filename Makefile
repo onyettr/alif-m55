@@ -59,17 +59,14 @@ CFLAGS += -I$(ALIF_BASE)/Device/M55_HE
 # Set CFLAGS.
 CFLAGS += -I. -I$(TOP) -I$(BUILD) 
 CFLAGS += $(INCLUDES)
-#CFLAGS += -Wall -Werror -nostdlib
-#	-target=arm-arm-none-eabi 	\
-
 CFLAGS += 						\
 	-march=armv8.1-m.main		\
 	-Wall						\
 	-O0 						\
 	-g 							\
 	-c							\
-	-D_RTE_						\
-	-DM55_HE
+	-DM55_HE					\
+	-DCPU=CPU_M55_HE
 
 CLANG_CFLAGS += 				\
 	$(OPTIMIZATION)				\
@@ -99,18 +96,17 @@ CSUPEROPT = -Os # save some code space for performance-critical code
 #endif
 
 # Set linker flags.
-#LDFLAGS += -nostdlib -T stm32f405.ld --gc-sections
-LDFLAGS += -T m55_he_services_test.ld
-#LDFLAGS += -specs=nosys.specs
+LDFLAGS += -specs=nosys.specs
+#LDFLAGS += -nostdlib 
+LDFLAGS	+= -T m55_he_services_test.ld 
 LDFLAGS += -march=armv8.1-m.main
 LDFLAGS	+= -Wl,-Map=nano.map,--cref
 LDFLAGS	+= -Wl,--gc-sections
 LDFLAGS += -Xlinker -print-memory-usage -Xlinker
 
 # Define the required source files.
-#SRC_C += lib.c main.c system.c
 SRC_C += main.c 
-#!SRC_C += newlib_stubs.c
+SRC_C += newlib_stubs.c
 SRC_C += uart_tracelib.c
 SRC_C +=												 \
 	$(DEVICE_SRC_DIR)/mpu_M55_HE.c					     \
@@ -118,6 +114,10 @@ SRC_C +=												 \
 	$(DEVICE_SRC_DIR)/system_M55_HE.c				     \
 	$(DEVICE_SRC_DIR)/system_utils.c				     \
 	$(DEVICE_SRC_DIR)/tgu_M55_HE.c
+
+# ALIF Peripherals from CMSIS
+SRC_C += Driver_USART.c 
+SRC_C += Driver_PINMUX_AND_PINPAD.c
 
 # Define the required object files.
 OBJ += $(PY_CORE_O)
@@ -128,16 +128,14 @@ all: $(BUILD)/firmware.dfu
 
 $(BUILD)/firmware.elf: $(OBJ)
 	$(ECHO) "LINK $@"
-#	$(ECHO) $(OBJ)
-	@$(CC) $(LDFLAGS) $(OBJS) -o $(BUILD)/firmware.elf 
-#	$(Q)$(CC) $(LDFLAGS) -o $@ $^
+	@$(CC) $(LDFLAGS) $(OBJ) -o $(BUILD)/firmware.elf 
 	$(Q)$(SIZE) $@
 
 $(BUILD)/firmware.bin: $(BUILD)/firmware.elf
 	$(ECHO) "Create $@"
 #	$(Q)$(OBJCOPY) -O binary -j .isr_vector -j .text -j .data $^ $@
 	$(ECHO) 'Generate binary file' $(BUILD)/firmware.bin
-	@$(OBJCOPY) -O binary $(BUILD)/firmware.elf $(BUILD)/firmware.bin
+	$(OBJCOPY) -O binary $(BUILD)/firmware.elf $(BUILD)/firmware.bin
 
 $(BUILD)/firmware.dfu: $(BUILD)/firmware.bin
 	$(ECHO) "Create $@"

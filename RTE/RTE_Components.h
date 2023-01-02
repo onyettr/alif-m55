@@ -15,7 +15,7 @@
 
 /* AlifSemiconductor::CMSIS Driver.USART.USART */
 #define RTE_Drivers_USART0   1           /* Driver UART0 */
-        #define RTE_Drivers_USART1   1           /* Driver UART1 */
+  #define RTE_Drivers_USART1   1           /* Driver UART1 */
 	#define RTE_Drivers_USART2   1           /* Driver UART1 */
 	#define RTE_Drivers_USART3   1           /* Driver UART1 */
 	#define RTE_Drivers_USART4   1           /* Driver UART1 */

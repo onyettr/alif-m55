@@ -333,10 +333,10 @@ void UTIMER_IRQHandler94    (void) __attribute__ ((weak, alias("Default_Handler"
 void UTIMER_IRQHandler95    (void) __attribute__ ((weak, alias("Default_Handler")));
 
 // main.c
-void MHU_ES1SE0_TX_IRQHandler(void);
-void MHU_SEES10_RX_IRQHandler(void);
-void MHU_ES1SE1_TX_IRQHandler(void);
-void MHU_SEES11_RX_IRQHandler(void);
+void MHU_ES1SE0_TX_IRQHandler(void) __attribute__ ((weak, alias("Default_Handler")));
+void MHU_SEES10_RX_IRQHandler(void) __attribute__ ((weak, alias("Default_Handler")));
+void MHU_ES1SE1_TX_IRQHandler(void) __attribute__ ((weak, alias("Default_Handler")));
+void MHU_SEES11_RX_IRQHandler(void) __attribute__ ((weak, alias("Default_Handler")));
 
 /*----------------------------------------------------------------------------
   Exception / Interrupt Vector table
