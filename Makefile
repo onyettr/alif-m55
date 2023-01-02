@@ -40,7 +40,7 @@ ALIF_PACK_SOURCE := $(USER_BASE)/AppData/Local/Arm/Packs/AlifSemiconductor
 else
 USER_BASE    := /home/$(shell whoami)
 INCLUDE_BASE := $(USER_BASE)/.cache/arm/packs/ARM/CMSIS/$(CMSIS_VERSION)
-ALIF_BASE 	 := $(USER_BASE)/.cache/arm/packs/AlifSemiconductor
+ALIF_PACK_SOURCE := $(USER_BASE)/.cache/arm/packs/AlifSemiconductor
 endif
 ALIF_BASE    := $(ALIF_PACK_SOURCE)/$(ALIF_DEVICE)/$(ALIF_CMSIS_VERSION)
 
