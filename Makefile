@@ -105,6 +105,17 @@ LDFLAGS	+= -Wl,--gc-sections
 LDFLAGS += -Xlinker -print-memory-usage -Xlinker
 
 # Define the required source files.
+
+#	shared/readline/readline.c 							\
+#	mphalport.c 										\
+
+# Porting layer extras
+SRC_C += 												\
+    shared/runtime/gchelper_generic.c 					\
+    shared/runtime/pyexec.c 							\
+    shared/runtime/stdout_helpers.c 					\
+
+# ALIF boot straps and CMSIS bits
 SRC_C += main.c 
 SRC_C += newlib_stubs.c
 SRC_C += retarget.c
@@ -115,8 +126,6 @@ SRC_C +=												 \
 	$(DEVICE_SRC_DIR)/system_M55_HE.c				     \
 	$(DEVICE_SRC_DIR)/system_utils.c				     \
 	$(DEVICE_SRC_DIR)/tgu_M55_HE.c
-
-# ALIF Peripherals from CMSIS
 SRC_C += Driver_USART.c 
 SRC_C += Driver_PINMUX_AND_PINPAD.c
 
@@ -130,7 +139,7 @@ all: $(BUILD)/firmware.dfu
 install:	$(BUILD)/firmware.elf
 	$(CP) m55-upython.json ../../../../firmware/setools/app-release-exec/build/config
 	$(CP) $(BUILD)/firmware.bin ../../../../firmware/setools/app-release-exec/build/images
-	
+
 $(BUILD)/firmware.elf: $(OBJ)
 	$(ECHO) "LINK $@"
 	@$(CC) $(LDFLAGS) $(OBJ) -o $(BUILD)/firmware.elf 
