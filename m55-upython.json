@@ -1,7 +1,7 @@
 {
 	"uPYTHON": {
         "binary": "firmware.bin",
-        "version" : "1.0.0",
+        "version" : "1.19.1",
         "cpu_id": "M55_HE",
         "loadAddress": "0x60000000",
         "flags": ["load", "boot"],
