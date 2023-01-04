@@ -69,23 +69,6 @@ CFLAGS += 						\
 	-DM55_HE					\
 	-DCPU=CPU_M55_HE
 
-CLANG_CFLAGS += 				\
-	$(OPTIMIZATION)				\
-	$(GENERATE_DEBUG_SYMBOLS)	\
-	-mcpu=cortex-m55 			\
-	-mfpu=none 					\
-	-mfloat-abi=soft 			\
-	-mthumb 					\
-	-mlittle-endian				\
-	-xc 						\
-	-std=c99 					\
-	-MD 						\
-	-MP 						\
-	-c							\
-	-DTEST_DEBUG 				\
-	-DCC_SB_SUPPORT_IOT 		\
-	-D_RTE_						\
-	$(INCLUDES)					
 CSUPEROPT = -Os # save some code space for performance-critical code
 
 # Select debugging or optimisation build.
@@ -113,18 +96,26 @@ LDFLAGS += -Xlinker -print-memory-usage -Xlinker
 #    shared/runtime/stdout_helpers.c 					\
 
 # ALIF boot straps and CMSIS bits
+CMSIS_SRC = 											\
+	Driver_USART.c										\
+	Driver_GPIO.c										\
+	GPIO_ll_drv.c										\
+	Driver_PINMUX_AND_PINPAD.c
+
+RTE_SRC	  = 											\
+	$(DEVICE_SRC_DIR)/mpu_M55_HE.c						\
+	$(DEVICE_SRC_DIR)/startup_M55_HE.c					\
+	$(DEVICE_SRC_DIR)/system_M55_HE.c					\
+	$(DEVICE_SRC_DIR)/system_utils.c					\
+	$(DEVICE_SRC_DIR)/tgu_M55_HE.c
+SRC_C += $(CMSIS_SRC) 
+SRC_C += $(RTE_SRC)
+
 SRC_C += main.c 
 SRC_C += newlib_stubs.c
 SRC_C += retarget.c
 SRC_C += uart_tracelib.c
-SRC_C += Driver_USART.c 
-SRC_C += Driver_PINMUX_AND_PINPAD.c
-SRC_C +=												 \
-	$(DEVICE_SRC_DIR)/mpu_M55_HE.c					     \
-	$(DEVICE_SRC_DIR)/startup_M55_HE.c				     \
-	$(DEVICE_SRC_DIR)/system_M55_HE.c				     \
-	$(DEVICE_SRC_DIR)/system_utils.c				     \
-	$(DEVICE_SRC_DIR)/tgu_M55_HE.c
+SRC_C += alif_evaluation_board.c
 
 # Define the required object files.
 OBJ += $(PY_CORE_O)

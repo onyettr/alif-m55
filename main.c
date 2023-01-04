@@ -32,8 +32,10 @@
 #include CMSIS_device_header
 #include "uart_tracelib.h"
 
-// Allocate memory for the MicroPython GC heap.
-//static char heap[4096];
+extern void alif_evaluation_led_setup(uint8_t led);
+extern void alif_evaluation_board_led_toggle(uint8_t led);
+extern void alif_evaluation_board_led_enable(uint8_t led);
+extern void alif_evaluation_board_led_disable(uint8_t led);
 
 static const char *demo_single_input =
     "print('hello world!', list(x + 1 for x in range(10)), end='eol\\n')";
@@ -74,24 +76,30 @@ void mp_hal_stdout_tx_strn_cooked(const char *str, size_t len) {
 
 void copy_vtor_table_to_ram(void)
 {
-    extern const VECTOR_TABLE_Type __VECTOR_TABLE[496];
-    static VECTOR_TABLE_Type MyVectorTable[496] __attribute__((aligned (2048)));
+  extern const VECTOR_TABLE_Type __VECTOR_TABLE[496];
+  static VECTOR_TABLE_Type MyVectorTable[496] __attribute__((aligned (2048)));
 
-    for(int i = 0; i < 496; i++)
-    {
-        MyVectorTable[i] = __VECTOR_TABLE[i];
-    }
-    // Set the new vector table into use.
-    SCB->VTOR = (uint32_t)(&MyVectorTable[0]);
-    __DSB();
+  for(int i = 0; i < 496; i++)
+  {
+    MyVectorTable[i] = __VECTOR_TABLE[i];
+  }
+  // Set the new vector table into use.
+  SCB->VTOR = (uint32_t)(&MyVectorTable[0]);
+  __DSB();
 }
 
 // Main entry point: initialise the runtime and execute demo strings.
 int main(void) {
-  // VTOR must be copied into RAM to enable dynamic setting of interrupt handler
-  // This can be removed once build time vector table is fixed to include MHU interrupts
+  int error_code;
+
+  /**
+   * ALIF specific setup
+   */
   copy_vtor_table_to_ram();
-  int ret = tracelib_init(NULL);
+  error_code = tracelib_init(NULL);
+  printf("M55_55 uPython STARTS\n");
+  alif_evaluation_led_setup(14);
+  alif_evaluation_board_led_enable(14);
 
   // Initialise the MicroPython runtime.
   mp_init();
@@ -99,8 +107,11 @@ int main(void) {
   do_str(demo_file_input, MP_PARSE_FILE_INPUT);
   mp_deinit();
 
-  printf("all done...\n");
-  (void)ret;
+  printf("M55_55 uPython ENDS\n");
+  alif_evaluation_board_led_toggle(14);
+
+  (void)error_code;
+
   return 0;
 }
 
