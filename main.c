@@ -27,41 +27,42 @@
 #include <string.h>
 #include "py/compile.h"
 #include "py/runtime.h"
-#include "py/compile.h"
-#include "py/gc.h"
-#include "py/mperrno.h"
-#include "py/stackctrl.h"
-#include "py/builtin.h"
-#include "shared/runtime/gchelper.h"
-#include "shared/runtime/pyexec.h"
+
 #include "RTE_Components.h"
 #include CMSIS_device_header
 #include "uart_tracelib.h"
 
 // Allocate memory for the MicroPython GC heap.
-static char heap[4096];
+//static char heap[4096];
 
-#if   CPU == M55_HE || defined(M55_HE)
-#include "M55_HE.h"
-#elif CPU == M55_HP || defined(M55_HP)
-#include "M55_HP.h"
-#else
-#error Target CPU is not defined
-#endif
+static const char *demo_single_input =
+    "print('hello world!', list(x + 1 for x in range(10)), end='eol\\n')";
 
-#if 0
-/* Disable Semihosting */
-#if __ARMCC_VERSION >= 6000000
-    __asm(".global __use_no_semihosting");
-#elif __ARMCC_VERSION >= 5000000
-    #pragma import(__use_no_semihosting)
-#else
-    #error Unsupported compiler
-#endif
-#endif
+static const char *demo_file_input =
+        "import micropython\n"
+        "\n"
+        "print(dir(micropython))\n"
+        "\n"
+        "for i in range(10):\n"
+        "    print('iter {:08}'.format(i))";
+
+static void do_str(const char *src, mp_parse_input_kind_t input_kind) {
+        nlr_buf_t nlr;
+        if (nlr_push(&nlr) == 0) {
+            // Compile, parse and execute the given string.
+            mp_lexer_t *lex = mp_lexer_new_from_str_len(MP_QSTR__lt_stdin_gt_, src, strlen(src), 0);
+            qstr source_name = lex->source_name;
+            mp_parse_tree_t parse_tree = mp_parse(lex, input_kind);
+            mp_obj_t module_fun = mp_compile(&parse_tree, source_name, true);
+            mp_call_function_0(module_fun);
+            nlr_pop();
+        } else {
+            // Uncaught exception: print it out.
+            mp_obj_print_exception(&mp_plat_print, (mp_obj_t)nlr.ret_val);
+        }
+}
 
 // Send string of given length to stdout, converting \n to \r\n.
-#if 0
 void mp_hal_stdout_tx_strn_cooked(const char *str, size_t len) {
     while (len--) {
         if (*str == '\n') {
@@ -70,9 +71,8 @@ void mp_hal_stdout_tx_strn_cooked(const char *str, size_t len) {
         printf("%c",*str++);
     }
 }
-#endif
 
-void copy_vtor_table_to_ram()
+void copy_vtor_table_to_ram(void)
 {
     extern const VECTOR_TABLE_Type __VECTOR_TABLE[496];
     static VECTOR_TABLE_Type MyVectorTable[496] __attribute__((aligned (2048)));
@@ -86,46 +86,37 @@ void copy_vtor_table_to_ram()
     __DSB();
 }
 
-// Do a garbage collection cycle.
-void gc_collect(void) {
-    gc_collect_start();
-    gc_helper_collect_regs_and_stack();
-    gc_collect_end();
-}
-
 // Main entry point: initialise the runtime and execute demo strings.
-//void bare_main(void) {
 int main(void) {
-
   // VTOR must be copied into RAM to enable dynamic setting of interrupt handler
-    // This can be removed once build time vector table is fixed to include MHU interrupts
-    copy_vtor_table_to_ram();
-    int ret = tracelib_init(NULL);
+  // This can be removed once build time vector table is fixed to include MHU interrupts
+  copy_vtor_table_to_ram();
+  int ret = tracelib_init(NULL);
 
- // Initialise the MicroPython runtime.
-   mp_stack_ctrl_init();
-   gc_init(heap, heap + sizeof(heap));
-   mp_init();
-   // Start a normal REPL; will exit when ctrl-D is entered on a blank line.
-   pyexec_friendly_repl();
+  // Initialise the MicroPython runtime.
+  mp_init();
+  do_str(demo_single_input, MP_PARSE_SINGLE_INPUT);
+  do_str(demo_file_input, MP_PARSE_FILE_INPUT);
+  mp_deinit();
 
-   // Deinitialise the runtime.
-   gc_sweep_all();
-   mp_deinit();
-
-   (void)ret;
-   return 0;
+  printf("all done...\n");
+  (void)ret;
+  return 0;
 }
 
-// There is no filesystem so stat'ing returns nothing.
-mp_import_stat_t mp_import_stat(const char *path) {
-    return MP_IMPORT_STAT_NO_EXIST;
+#if !MICROPY_DEBUG_PRINTERS
+// With MICROPY_DEBUG_PRINTERS disabled DEBUG_printf is not defined but it
+// is still needed by esp-open-lwip for debugging output, so define it here.
+#include <stdarg.h>
+int mp_vprintf(const mp_print_t *print, const char *fmt, va_list args);
+int DEBUG_printf(const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    int ret = mp_vprintf(MICROPY_DEBUG_PRINTER, fmt, ap);
+    va_end(ap);
+    return ret;
 }
-
-// There is no filesystem so opening a file raises an exception.
-mp_lexer_t *mp_lexer_new_from_file(const char *filename) {
-    mp_raise_OSError(MP_ENOENT);
-}
+#endif
 
 // Called if an exception is raised outside all C exception-catching handlers.
 void nlr_jump_fail(void *val) {

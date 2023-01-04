@@ -65,6 +65,7 @@ CFLAGS += 						\
 	-O0 						\
 	-g 							\
 	-c							\
+	-D_RTE_						\
 	-DM55_HE					\
 	-DCPU=CPU_M55_HE
 
@@ -100,34 +101,30 @@ LDFLAGS += -specs=nosys.specs
 #LDFLAGS += -nostdlib 
 LDFLAGS	+= -T m55_he_services_test.ld 
 LDFLAGS += -march=armv8.1-m.main
+LDFLAGS	+= -lm
 LDFLAGS	+= -Wl,-Map=$(BUILD)/firmware.map,--cref
 LDFLAGS	+= -Wl,--gc-sections
 LDFLAGS += -Xlinker -print-memory-usage -Xlinker
 
-# Define the required source files.
-
-#	shared/readline/readline.c 							\
-#	mphalport.c 										\
-
 # Porting layer extras
-SRC_C += 												\
-    shared/runtime/gchelper_generic.c 					\
-    shared/runtime/pyexec.c 							\
-    shared/runtime/stdout_helpers.c 					\
+#SRC_C += 												\
+#    shared/runtime/gchelper_generic.c 					\
+#    shared/runtime/pyexec.c 							\
+#    shared/runtime/stdout_helpers.c 					\
 
 # ALIF boot straps and CMSIS bits
 SRC_C += main.c 
 SRC_C += newlib_stubs.c
 SRC_C += retarget.c
 SRC_C += uart_tracelib.c
+SRC_C += Driver_USART.c 
+SRC_C += Driver_PINMUX_AND_PINPAD.c
 SRC_C +=												 \
 	$(DEVICE_SRC_DIR)/mpu_M55_HE.c					     \
 	$(DEVICE_SRC_DIR)/startup_M55_HE.c				     \
 	$(DEVICE_SRC_DIR)/system_M55_HE.c				     \
 	$(DEVICE_SRC_DIR)/system_utils.c				     \
 	$(DEVICE_SRC_DIR)/tgu_M55_HE.c
-SRC_C += Driver_USART.c 
-SRC_C += Driver_PINMUX_AND_PINPAD.c
 
 # Define the required object files.
 OBJ += $(PY_CORE_O)

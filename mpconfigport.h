@@ -36,12 +36,17 @@
 #define MICROPY_ENABLE_COMPILER                 (1)
 
 // Python internal features
+#define MICROPY_ENABLE_GC                       (0)
 //#define MICROPY_ERROR_REPORTING                 (MICROPY_ERROR_REPORTING_NONE)
-// Python internal features.
-#define MICROPY_ENABLE_GC                       (1)
-#define MICROPY_HELPER_REPL                     (1)
 #define MICROPY_ERROR_REPORTING                 (MICROPY_ERROR_REPORTING_TERSE)
-#define MICROPY_FLOAT_IMPL                      (MICROPY_FLOAT_IMPL_FLOAT)
+//#define MICROPY_FLOAT_IMPL                      (MICROPY_FLOAT_IMPL_FLOAT)
+
+#define MICROPY_MEM_STATS                       (0)
+#define MICROPY_DEBUG_PRINTERS                  (0)
+#define MICROPY_DEBUG_VERBOSE                   (0)
+#define MICROPY_DEBUG_MP_OBJ_SENTINELS          (0)
+#define MICROPY_DEBUG_PARSE_RULE_NAME           (0)
+#define MICROPY_DEBUG_VM_STACK_OVERFLOW         (1)
 
 // Enable u-modules to be imported with their standard name, like sys.
 #define MICROPY_MODULE_WEAK_LINKS               (1)
@@ -55,6 +60,11 @@
 #define MICROPY_PY_IO                           (0)
 #define MICROPY_PY_STRUCT                       (0)
 
+// Define the port's name and hardware.
+#define MICROPY_HW_BOARD_NAME "ALIF-Evaluation-board"
+#define MICROPY_HW_MCU_NAME   "M55_HE"
+
+//#define MP_STATE_PORT MP_STATE_VM
 // Type definitions for the specific machine.
 
 typedef intptr_t mp_int_t; // must be pointer size
@@ -63,8 +73,4 @@ typedef long mp_off_t;
 
 // We need to provide a declaration/definition of alloca().
 
-// Define the port's name and hardware.
-#define MICROPY_HW_BOARD_NAME "ALIF-Evaluation-board"
-#define MICROPY_HW_MCU_NAME   "M55_HE"
 
-#define MP_STATE_PORT MP_STATE_VM

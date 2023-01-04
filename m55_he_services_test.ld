@@ -16,8 +16,11 @@ __RAM_SIZE = 0x00040000;
     <o1> Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
   </h>
   -----------------------------------------------------------------------------*/
-__STACK_SIZE = 0x00000400;
-__HEAP_SIZE  = 0x00000C00;
+//__STACK_SIZE = 0x00000400;
+__STACK_SIZE = 0x00002710;
+
+//__HEAP_SIZE  = 0x00000C00;
+__HEAP_SIZE  = 0x00001000;
 
 /*
  *-------------------- <<< end of configuration section >>> -------------------
