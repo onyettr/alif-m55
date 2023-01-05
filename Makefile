@@ -95,6 +95,10 @@ LDFLAGS += -Xlinker -print-memory-usage -Xlinker
 #    shared/runtime/pyexec.c 							\
 #    shared/runtime/stdout_helpers.c 					\
 
+SRC_C += 	shared/runtime/pyexec.c 
+SRC_C +=	shared/runtime/stdout_helpers.c
+SRC_C += 	shared/readline/readline.c
+
 # ALIF boot straps and CMSIS bits
 CMSIS_SRC = 											\
 	Driver_USART.c										\

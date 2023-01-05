@@ -34,6 +34,8 @@ extern ARM_DRIVER_USART ARM_Driver_USART_(UART);
 static ARM_DRIVER_USART *USARTdrv = &ARM_Driver_USART_(UART);
 
 volatile uint32_t uart_event;
+volatile uint32_t rx_uart_event;
+
 static bool initialized = false;
 const char * tr_prefix = NULL;
 uint16_t prefix_len;
@@ -85,13 +87,25 @@ static int hardware_init(void)
 void myUART_callback(uint32_t event)
 {
     uart_event = event;
+    if (event & ARM_USART_EVENT_SEND_COMPLETE)
+    {
+      uart_event = 1;
+    }
+
+    if (event & ARM_USART_EVENT_RECEIVE_COMPLETE)
+    {
+      rx_uart_event = 1;
+    }
+
+    if (event & ARM_USART_EVENT_RX_TIMEOUT)
+    {
+    }
 }
 
 int tracelib_init(const char * prefix)
 {
     char  cmd    = 0;
     int32_t ret    = 0;
-    uint32_t events = 0;
 
     tr_prefix = prefix;
     if (tr_prefix) {
@@ -140,12 +154,38 @@ int tracelib_init(const char * prefix)
         return ret;
     }
 
+    /* Reciever line */
+    ret =  USARTdrv->Control(ARM_USART_CONTROL_RX, 1);
+    if(ret != ARM_DRIVER_OK)
+    {
+      return ret;
+    }
+
     initialized = true;
+    rx_uart_event = 0;
 
     (void)cmd;
-    (void)events;
 
     return ret;
+}
+
+char _get_char(void)
+{
+  int ret;
+  char cmd = 0;
+
+  if (initialized)
+  {
+    ret = USARTdrv->Receive(&cmd, 1);
+    if(ret != ARM_DRIVER_OK)
+    {
+      while (1);
+    }
+    while (!rx_uart_event);
+    rx_uart_event = 0;
+  }
+
+  return cmd;
 }
 
 int send_str(const char* str, uint32_t len)
