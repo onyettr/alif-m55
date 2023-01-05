@@ -102,12 +102,14 @@ mp_import_stat_t mp_import_stat(const char *path) {
 
 // Send string of given length
 void mp_hal_stdout_tx_strn(const char *str, mp_uint_t len) {
-    #if MICROPY_MIN_USE_STDOUT
+#if MICROPY_MIN_USE_STDOUT
     int r = write(STDOUT_FILENO, str, len);
     (void)r;
-    #elif MICROPY_MIN_USE_STM32_MCU
+#elif MICROPY_MIN_USE_STM32_MCU
+#error No STM32 for us!
+#else
     printf(str);
-    #endif
+#endif
 }
 
 int mp_hal_stdin_rx_chr(void) {
@@ -159,7 +161,6 @@ int main(void) {
    */
   copy_vtor_table_to_ram();
   error_code = tracelib_init(NULL);
-  printf("M55_55 uPython STARTS\n");
   alif_evaluation_led_setup(14);
   alif_evaluation_board_led_enable(14);
 
@@ -187,7 +188,7 @@ int main(void) {
 #endif
 
   printf("M55_55 uPython ENDS\n");
-  alif_evaluation_board_led_toggle(14);
+  alif_evaluation_board_led_disable(14);
 
   (void)error_code;
 

@@ -30,6 +30,8 @@
 /* UART Driver */
 extern ARM_DRIVER_USART ARM_Driver_USART_(UART);
 
+int send_str(const char* str, uint32_t len);
+
 /* UART Driver instance */
 static ARM_DRIVER_USART *USARTdrv = &ARM_Driver_USART_(UART);
 
@@ -183,6 +185,8 @@ char _get_char(void)
     }
     while (!rx_uart_event);
     rx_uart_event = 0;
+
+    send_str(&cmd, 1);   /* Echo the incoming */
   }
 
   return cmd;
