@@ -82,7 +82,7 @@ CSUPEROPT = -Os # save some code space for performance-critical code
 # Set linker flags.
 LDFLAGS += -specs=nosys.specs
 #LDFLAGS += -nostdlib 
-LDFLAGS	+= -T m55_he_services_test.ld 
+LDFLAGS	+= -T m55_he.ld 
 LDFLAGS += -march=armv8.1-m.main
 LDFLAGS	+= -lm
 LDFLAGS	+= -Wl,-Map=$(BUILD)/firmware.map,--cref
@@ -95,8 +95,8 @@ LDFLAGS += -Xlinker -print-memory-usage -Xlinker
 #    shared/runtime/pyexec.c 							\
 #    shared/runtime/stdout_helpers.c 					\
 
-SRC_C += 	shared/runtime/pyexec.c 
 SRC_C +=	shared/runtime/stdout_helpers.c
+SRC_C += 	shared/runtime/pyexec.c 
 SRC_C += 	shared/readline/readline.c
 
 # ALIF boot straps and CMSIS bits
@@ -107,10 +107,10 @@ CMSIS_SRC = 											\
 	Driver_PINMUX_AND_PINPAD.c
 
 RTE_SRC	  = 											\
-	$(DEVICE_SRC_DIR)/mpu_M55_HE.c						\
 	$(DEVICE_SRC_DIR)/startup_M55_HE.c					\
 	$(DEVICE_SRC_DIR)/system_M55_HE.c					\
 	$(DEVICE_SRC_DIR)/system_utils.c					\
+	$(DEVICE_SRC_DIR)/mpu_M55_HE.c						\
 	$(DEVICE_SRC_DIR)/tgu_M55_HE.c
 SRC_C += $(CMSIS_SRC) 
 SRC_C += $(RTE_SRC)

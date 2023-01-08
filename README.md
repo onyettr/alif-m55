@@ -12,7 +12,9 @@ On execution, this port has two *pre-canned* demos included.
 
 ## Installation
 
-- Download Micropython package [micropython.org/download](https://micropython.org/download/micropython-1.19.1.tar.xz)
+- Download Micropython package
+    - ZIP / TAR file [micropython.org.download](https://micropython.org/download/micropython-1.19.1.tar.xz)
+    - git clone git@github.com:micropython/micropython.git
 - Download alif-m55 from GitHub (onyettr)
 
 ### Prerequisites
@@ -47,9 +49,12 @@ $ cd ../app-release-exe
 $ app-gen-toc -f build/config/m55-upython.json
 $ app-write-mram 
 ```
+## Running
+Evaluation board uses UART4
 
 ## Limitations
 - CLANG / ARM-DS has not been tested
+- CMSIS integration is rough
 
 ## Porting issues - Heap and stack size
 Using the default sizes from the LD file caused a Hard Fault on execution. Increasing the size of the Heap and Stack made this go away 

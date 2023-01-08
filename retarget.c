@@ -217,7 +217,7 @@ void RETARGET(_exit)(int return_code)
     UNUSED(return_code);
 //#pragma clang diagnostic push
 //#pragma clang diagnostic ignored "-Wnonnull"
-    fputc(0x0A, (FILE*)NULL);
+//    fputc(0x0A, (FILE*)NULL);
 //#pragma clang diagnostic pop
     while(1);
 }
