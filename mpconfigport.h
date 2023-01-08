@@ -38,6 +38,7 @@
 // Python internal features
 #define MICROPY_ENABLE_GC                       (1)
 #define MICROPY_HELPER_REPL                     (1)
+#define MICROPY_REPL_EVENT_DRIVEN               (1)
 #define MICROPY_MODULE_FROZEN_MPY               (0)
 #define MICROPY_ENABLE_EXTERNAL_IMPORT          (1)
 
@@ -72,15 +73,10 @@
     const char *readline_hist[8];
 
 // Define the port's name and hardware.
-#define MICROPY_HW_BOARD_NAME "ALIF-Evaluation-board"
+#define MICROPY_HW_BOARD_NAME "ALIF-Evaluation-board REV_A1"
 #define MICROPY_HW_MCU_NAME   "M55_HE"
 
 // Type definitions for the specific machine.
-
 typedef intptr_t mp_int_t; // must be pointer size
 typedef uintptr_t mp_uint_t; // must be pointer size
 typedef long mp_off_t;
-
-// We need to provide a declaration/definition of alloca().
-
-

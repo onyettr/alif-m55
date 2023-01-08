@@ -104,9 +104,13 @@ void myUART_callback(uint32_t event)
     }
 }
 
+/**
+ * @brief fire up the tracelib
+ * @param prefix
+ * @return
+ */
 int tracelib_init(const char * prefix)
 {
-    char  cmd    = 0;
     int32_t ret    = 0;
 
     tr_prefix = prefix;
@@ -165,8 +169,6 @@ int tracelib_init(const char * prefix)
 
     initialized = true;
     rx_uart_event = 0;
-
-    (void)cmd;
 
     return ret;
 }

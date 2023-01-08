@@ -186,6 +186,7 @@ int main(void) {
 #else
   pyexec_frozen_module("frozentest.py");
 #endif
+  mp_deinit();
 
   printf("M55_55 uPython ENDS\n");
   alif_evaluation_board_led_disable(14);
